@@ -1,13 +1,16 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { SignInButton, SignOutButton, useSession } from '@clerk/clerk-react'
+import { api } from '@/convex/_generated/api'
+import { SignInButton, SignOutButton } from '@clerk/clerk-react'
 import { SignedIn, SignedOut } from '@clerk/nextjs'
+import { useMutation, useQuery } from 'convex/react'
 
 const Home = () => {
-  const session = useSession()
+  const files = useQuery(api.files.getFiles)
+  const createFile = useMutation(api.files.createFile)
   return (
-    <div>
+    <main className='flex min-h-screen flex-col items-center justify-center gap-y-4'>
       <SignedIn>
         <SignOutButton>
           <Button>로그아웃</Button>
@@ -18,7 +21,18 @@ const Home = () => {
           <Button>로그인</Button>
         </SignInButton>
       </SignedOut>
-    </div>
+      {files?.map((file) => <div key={file._id}>{file.name}</div>)}
+
+      <Button
+        onClick={() =>
+          createFile({
+            name: 'hello world',
+          })
+        }
+      >
+        파일 생성
+      </Button>
+    </main>
   )
 }
 
