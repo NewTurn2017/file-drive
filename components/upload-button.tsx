@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/input'
 import { z } from 'zod'
 import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import { Doc } from '@/convex/_generated/dataModel'
 
 const formSchema = z.object({
   title: z
@@ -67,19 +68,60 @@ export const UploadButton = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!orgId) return
     const postUrl = await generateUploadUrl()
+    let fileType = ''
+    console.log('hwp:', values.file[0].name.split('.')[1])
+    if (values.file[0].name.split('.')[1] === 'hwp') {
+      fileType = 'application/x-hwp'
+    } else {
+      fileType = values.file[0].type
+    }
 
     const result = await fetch(postUrl, {
       method: 'POST',
-      headers: { 'Content-Type': values.file[0].type },
+      headers: { 'Content-Type': fileType },
       body: values.file[0],
     })
+
+    console.log(fileType)
     const { storageId } = await result.json()
 
+    const types = {
+      'image/jpeg': 'image',
+      'image/png': 'image',
+      'image/gif': 'image',
+      'image/svg+xml': 'image',
+      'image/bmp': 'image',
+      'image/tiff': 'image',
+      'image/webp': 'image',
+      'application/pdf': 'pdf',
+      'application/msword': 'doc',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        'docx',
+      'application/vnd.ms-excel': 'xls',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        'xlsx',
+      'application/vnd.ms-powerpoint': 'ppt',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+        'pptx',
+      'text/plain': 'txt',
+      'text/csv': 'csv',
+      'application/zip': 'zip',
+      'application/x-rar-compressed': 'rar',
+      'audio/mpeg': 'mp3',
+      'video/mp4': 'mp4',
+      'video/x-msvideo': 'avi',
+      'video/quicktime': 'mov',
+      'audio/wav': 'wav',
+      'video/mpeg': 'mpg',
+      'audio/m4a': 'm4a',
+      'application/x-hwp': 'hwp',
+    } as Record<string, Doc<'files'>['type']>
     try {
       await createFile({
         name: values.title,
         orgId,
         fileId: storageId,
+        type: types[fileType],
       })
 
       form.reset()
