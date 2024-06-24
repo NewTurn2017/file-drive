@@ -35,6 +35,7 @@ export function FileCardActions({ file }: { file: Doc<'files'> }) {
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const deleteFile = useMutation(api.files.deleteFile)
+  const toggleFavorite = useMutation(api.files.toggleFavorite)
 
   return (
     <>
@@ -71,6 +72,17 @@ export function FileCardActions({ file }: { file: Doc<'files'> }) {
           <MoreVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={() => {
+              toggleFavorite({ fileId: file._id })
+            }}
+            className='flex gap-1 items-center cursor-pointer'
+          >
+            <div className='flex gap-1 items-center cursor-pointer'>
+              <StarIcon className='w-4 h-4' /> 즐겨찾기
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
               setIsConfirmOpen(true)
