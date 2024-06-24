@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useState } from 'react'
-import { useMutation } from 'convex/react'
+import { useMutation, useQuery } from 'convex/react'
 import { useToast } from '@/components/ui/use-toast'
 import { Protect } from '@clerk/nextjs'
 import { Doc } from '@/convex/_generated/dataModel'
@@ -43,6 +43,7 @@ export function FileCardActions({
   const deleteFile = useMutation(api.files.deleteFile)
   const restoreFile = useMutation(api.files.restoreFile)
   const toggleFavorite = useMutation(api.files.toggleFavorite)
+  const me = useQuery(api.users.getMe)
 
   return (
     <>
@@ -111,7 +112,16 @@ export function FileCardActions({
             </div>
           </DropdownMenuItem>
 
-          <Protect role='org:admin' fallback={<></>}>
+          <Protect
+            condition={(check) => {
+              return (
+                check({
+                  role: 'org:admin',
+                }) || file.userId === me?._id
+              )
+            }}
+            fallback={<></>}
+          >
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {

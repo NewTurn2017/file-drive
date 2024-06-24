@@ -12,6 +12,14 @@ import { useState } from 'react'
 import { columns } from './columns'
 import { FileTable } from './file-table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { fileTypeArray, fileTypes } from '@/convex/schema'
 
 type Props = {
   title: string
@@ -23,6 +31,7 @@ export const FileBrowser = ({ title, favoritesOnly, deletedOnly }: Props) => {
   const organization = useOrganization()
   const user = useUser()
   const [query, setQuery] = useState('')
+  const [type, setType] = useState('all')
 
   let orgId: string | undefined = undefined
   if (organization.isLoaded && user.isLoaded) {
@@ -36,7 +45,9 @@ export const FileBrowser = ({ title, favoritesOnly, deletedOnly }: Props) => {
 
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favorites: favoritesOnly, deletedOnly } : 'skip'
+    orgId
+      ? { orgId, type, query, favorites: favoritesOnly, deletedOnly }
+      : 'skip'
   )
 
   const isLoading = files === undefined
@@ -60,6 +71,7 @@ export const FileBrowser = ({ title, favoritesOnly, deletedOnly }: Props) => {
       </div>
     )
   }
+
   return (
     <main className='container mx-auto pt-12'>
       <div className='flex gap-8'>
@@ -72,16 +84,34 @@ export const FileBrowser = ({ title, favoritesOnly, deletedOnly }: Props) => {
           </div>
 
           <Tabs defaultValue='grid'>
-            <TabsList className='mb-4'>
-              <TabsTrigger value='grid'>
-                <GridIcon className='size-4 mr-2' />
-                그리드
-              </TabsTrigger>
-              <TabsTrigger value='table'>
-                <Rows4Icon className='size-4 mr-2' />
-                테이블
-              </TabsTrigger>
-            </TabsList>
+            <div className='flex items-center justify-between'>
+              <TabsList className='mb-4'>
+                <TabsTrigger value='grid'>
+                  <GridIcon className='size-4 mr-2' />
+                  그리드
+                </TabsTrigger>
+                <TabsTrigger value='table'>
+                  <Rows4Icon className='size-4 mr-2' />
+                  테이블
+                </TabsTrigger>
+              </TabsList>
+
+              <div>
+                <Select value={type} onValueChange={setType}>
+                  <SelectTrigger className='w-[180px]'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='all'>모든 파일</SelectItem>
+                    {fileTypeArray.map((fileType) => (
+                      <SelectItem key={fileType} value={fileType}>
+                        {fileType}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             {isLoading && (
               <div className='w-full h-screen items-center justify-center flex flex-col'>
                 <Loader2 className='size-24 animate-spin text-gray-500' />
