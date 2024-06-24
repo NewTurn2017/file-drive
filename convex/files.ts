@@ -13,7 +13,7 @@ export const generateUploadUrl = mutation(async (ctx) => {
   const identity = await ctx.auth.getUserIdentity()
 
   if (!identity) {
-    throw new ConvexError('Unauthorized')
+    throw new ConvexError('you must be logged in to upload a file')
   }
 
   return await ctx.storage.generateUploadUrl()
@@ -124,7 +124,14 @@ export const getFiles = query({
       files = files.filter((file) => file.type === args.type)
     }
 
-    return files
+    const filesWithUrl = await Promise.all(
+      files.map(async (file) => ({
+        ...file,
+        url: await ctx.storage.getUrl(file.fileId),
+      }))
+    )
+
+    return filesWithUrl
   },
 })
 

@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
+  CopyIcon,
   Download,
   MoreVertical,
   StarIcon,
@@ -34,7 +35,7 @@ export function FileCardActions({
   file,
   isFavorited,
 }: {
-  file: Doc<'files'>
+  file: Doc<'files'> & { url: string | null }
   isFavorited: boolean
 }) {
   const { toast } = useToast()
@@ -80,8 +81,31 @@ export function FileCardActions({
           <MoreVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
+          {/* 다운로드 링크 복사버튼 */}
+          {file.url && (
+            <DropdownMenuItem
+              onClick={() => {
+                if (!file.url) return
+                navigator.clipboard.writeText(file.url)
+                toast({
+                  duration: 1000,
+                  variant: 'default',
+                  title: '링크가 복사되었습니다.',
+                })
+              }}
+              className='flex gap-1 items-center cursor-pointer'
+            >
+              <div className='flex gap-1 items-center cursor-pointer'>
+                <CopyIcon className='w-4 h-4' />
+                링크 복사
+              </div>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem
-            onClick={() => {}}
+            onClick={() => {
+              if (!file.url) return
+              window.open(file.url, '_blank')
+            }}
             className='flex gap-1 items-center cursor-pointer'
           >
             <div className='flex gap-1 items-center cursor-pointer'>

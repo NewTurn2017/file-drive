@@ -15,11 +15,12 @@ import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import { formatDistanceToNow } from 'date-fns'
 import { ko } from 'date-fns/locale'
+import Image from 'next/image'
 
 export function FileCard({
   file,
 }: {
-  file: Doc<'files'> & { isFavorited: boolean }
+  file: Doc<'files'> & { isFavorited: boolean; url: string | null }
 }) {
   const size = 30
   const icon = <FileIcons mimeType={file.type} size={size} /> || (
@@ -43,14 +44,9 @@ export function FileCard({
         </div>
       </CardHeader>
       <CardContent>
-        {/* {file.type === 'image' && (
-          <Image
-            src={getFileUrl(file.fileId)}
-            alt={file.name}
-            width={200}
-            height={100}
-          />
-        )} */}
+        {file.type === 'image' && file.url && (
+          <Image alt={file.name} width='200' height='100' src={file.url} />
+        )}
       </CardContent>
       <CardFooter className='flex justify-between'>
         <div className='flex gap-x-2 text-xs text-gray-700 items-center'>
