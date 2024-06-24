@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 export const Header = () => {
   return (
-    <div className='border-b py-4 bg-gray-50'>
+    <div className='relative border-b py-4 bg-gray-50 z-10'>
       <div className='container mx-auto flex justify-between items-center'>
         <Link href='/' className='flex items-center gap-2'>
           <Image
