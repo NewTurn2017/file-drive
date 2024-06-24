@@ -9,6 +9,7 @@ import {
   FileIcon,
   MoreVertical,
   StarHalf,
+  StarHalfIcon,
   StarIcon,
   TrashIcon,
   UndoIcon,
@@ -30,7 +31,13 @@ import { Protect } from '@clerk/nextjs'
 import { Doc } from '@/convex/_generated/dataModel'
 import { api } from '@/convex/_generated/api'
 
-export function FileCardActions({ file }: { file: Doc<'files'> }) {
+export function FileCardActions({
+  file,
+  isFavorite,
+}: {
+  file: Doc<'files'>
+  isFavorite?: boolean
+}) {
   const { toast } = useToast()
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
@@ -75,11 +82,23 @@ export function FileCardActions({ file }: { file: Doc<'files'> }) {
           <DropdownMenuItem
             onClick={() => {
               toggleFavorite({ fileId: file._id })
+
+              toast({
+                duration: 1000,
+                variant: 'default',
+                title: `${isFavorite ? '즐겨찾기 해제' : '즐겨찾기 등록'}`,
+                description: `${isFavorite ? '파일이 즐겨찾기에 해제되었습니다.' : '파일이 즐겨찾기에 등록되었습니다.'}`,
+              })
             }}
             className='flex gap-1 items-center cursor-pointer'
           >
             <div className='flex gap-1 items-center cursor-pointer'>
-              <StarIcon className='w-4 h-4' /> 즐겨찾기
+              {isFavorite ? (
+                <StarIcon className='w-4 h-4 fill-black' />
+              ) : (
+                <StarIcon className='w-4 h-4' />
+              )}
+              즐겨찾기
             </div>
           </DropdownMenuItem>
           <DropdownMenuSeparator />

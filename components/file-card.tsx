@@ -6,20 +6,23 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-import { ReactNode } from 'react'
-import { useQuery } from 'convex/react'
-
-import Image from 'next/image'
-import { Doc, Id } from '@/convex/_generated/dataModel'
+import { Doc } from '@/convex/_generated/dataModel'
 import { FileCardActions } from './file-actions'
 import { Button } from './ui/button'
 import FileIcons from '@/lib/iconMapping'
 
-export function FileCard({ file }: { file: Doc<'files'> }) {
+export function FileCard({
+  file,
+  favorites,
+}: {
+  file: Doc<'files'>
+  favorites?: Doc<'favorites'>[]
+}) {
   const size = 30
   const icon = <FileIcons mimeType={file.type} size={size} /> || (
     <FileIcons mimeType='default' size={size} />
   )
+  const isFavorite = favorites?.some((favorite) => favorite.fileId === file._id)
 
   return (
     <Card>
@@ -32,7 +35,7 @@ export function FileCard({ file }: { file: Doc<'files'> }) {
           <p className='text-2xl font-semibold'>{file.name}</p>
         </CardTitle>
         <div className='absolute top-2 right-2'>
-          <FileCardActions file={file} />
+          <FileCardActions file={file} isFavorite={isFavorite} />
         </div>
       </CardHeader>
       <CardContent>

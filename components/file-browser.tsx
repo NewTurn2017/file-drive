@@ -12,10 +12,10 @@ import { useState } from 'react'
 
 type Props = {
   title: string
-  favorites?: boolean
+  favoritesOnly?: boolean
 }
 
-export const FileBrowser = ({ title, favorites }: Props) => {
+export const FileBrowser = ({ title, favoritesOnly }: Props) => {
   const organization = useOrganization()
   const user = useUser()
   const [query, setQuery] = useState('')
@@ -24,9 +24,15 @@ export const FileBrowser = ({ title, favorites }: Props) => {
   if (organization.isLoaded && user.isLoaded) {
     orgId = organization.organization?.id ?? user.user?.id
   }
+
+  const favorites = useQuery(
+    api.files.getAllFavorites,
+    orgId ? { orgId } : 'skip'
+  )
+
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favorites } : 'skip'
+    orgId ? { orgId, query, favorites: favoritesOnly } : 'skip'
   )
 
   const isLoading = files === undefined
@@ -62,7 +68,9 @@ export const FileBrowser = ({ title, favorites }: Props) => {
               </div>
 
               <div className='grid grid-cols-3 gap-4 '>
-                {files?.map((file) => <FileCard key={file._id} file={file} />)}
+                {files?.map((file) => (
+                  <FileCard key={file._id} file={file} favorites={favorites} />
+                ))}
               </div>
             </>
           )}

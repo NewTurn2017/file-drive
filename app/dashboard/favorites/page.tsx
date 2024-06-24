@@ -6,7 +6,7 @@ import React from 'react'
 const FavoritesPage = () => {
   return (
     <div>
-      <FileBrowser title='즐겨찾기' favorites />
+      <FileBrowser title='즐겨찾기' favoritesOnly />
     </div>
   )
 }
