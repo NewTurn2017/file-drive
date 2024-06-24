@@ -13,9 +13,10 @@ import { useState } from 'react'
 type Props = {
   title: string
   favoritesOnly?: boolean
+  deletedOnly?: boolean
 }
 
-export const FileBrowser = ({ title, favoritesOnly }: Props) => {
+export const FileBrowser = ({ title, favoritesOnly, deletedOnly }: Props) => {
   const organization = useOrganization()
   const user = useUser()
   const [query, setQuery] = useState('')
@@ -32,7 +33,7 @@ export const FileBrowser = ({ title, favoritesOnly }: Props) => {
 
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favorites: favoritesOnly } : 'skip'
+    orgId ? { orgId, query, favorites: favoritesOnly, deletedOnly } : 'skip'
   )
 
   const isLoading = files === undefined

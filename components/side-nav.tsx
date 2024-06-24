@@ -2,14 +2,14 @@
 
 import { Button } from '@/components/ui/button'
 import clsx from 'clsx'
-import { FileIcon, StarIcon, TrashIcon } from 'lucide-react'
+import { FileIcon, StarIcon, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const navItems = [
   { href: '/dashboard/files', icon: FileIcon, label: '모든 파일' },
   { href: '/dashboard/favorites', icon: StarIcon, label: '즐겨찾기' },
-  { href: '/dashboard/trash', icon: TrashIcon, label: '휴지통' },
+  { href: '/dashboard/trash', icon: Trash2Icon, label: '휴지통' },
 ]
 
 export function SideNav() {
