@@ -36,7 +36,8 @@ export const hasAccessToOrg = async (
   }
 
   const hasAccess =
-    user.orgIds.includes(orgId) || user.tokenIdentifier.includes(orgId)
+    user.orgIds.some((org) => org.orgId === orgId) ||
+    user.tokenIdentifier.includes(orgId)
 
   if (!hasAccess) {
     return null
@@ -120,6 +121,12 @@ export const deleteFile = mutation({
 
     if (!access) {
       throw new ConvexError('you do not have access to this file')
+    }
+
+    const isAdmin = access.user.orgIds.some((org) => org.role === 'admin')
+
+    if (!isAdmin) {
+      throw new ConvexError('you do not have permission to delete this file')
     }
 
     await ctx.db.delete(args.fileId)

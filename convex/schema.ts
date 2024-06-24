@@ -34,6 +34,8 @@ export const fileTypes = v.union(
   v.literal('hwp')
 )
 
+export const roles = v.union(v.literal('admin'), v.literal('member'))
+
 export default defineSchema({
   files: defineTable({
     name: v.string(),
@@ -43,7 +45,12 @@ export default defineSchema({
   }).index('by_orgId', ['orgId']),
   users: defineTable({
     tokenIdentifier: v.string(),
-    orgIds: v.array(v.string()),
+    orgIds: v.array(
+      v.object({
+        orgId: v.string(),
+        role: roles,
+      })
+    ),
   }).index('by_tokenIdentifier', ['tokenIdentifier']),
   favorites: defineTable({
     fileId: v.id('files'),

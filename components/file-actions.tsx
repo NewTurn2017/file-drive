@@ -101,17 +101,19 @@ export function FileCardActions({
               즐겨찾기
             </div>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => {
-              setIsConfirmOpen(true)
-            }}
-            className='flex gap-1 items-center cursor-pointer'
-          >
-            <div className='flex gap-1 text-red-600 items-center cursor-pointer'>
-              <TrashIcon className='w-4 h-4' /> 삭제
-            </div>
-          </DropdownMenuItem>
+          <Protect role='org:admin' fallback={<></>}>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                setIsConfirmOpen(true)
+              }}
+              className='flex gap-1 items-center cursor-pointer'
+            >
+              <div className='flex gap-1 text-red-600 items-center cursor-pointer'>
+                <TrashIcon className='w-4 h-4' /> 삭제
+              </div>
+            </DropdownMenuItem>
+          </Protect>
         </DropdownMenuContent>
       </DropdownMenu>
     </>
