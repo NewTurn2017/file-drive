@@ -32,10 +32,10 @@ import { cn } from '@/lib/utils'
 
 export function FileCardActions({
   file,
-  isFavorite,
+  isFavorited,
 }: {
   file: Doc<'files'>
-  isFavorite?: boolean
+  isFavorited: boolean
 }) {
   const { toast } = useToast()
 
@@ -95,14 +95,14 @@ export function FileCardActions({
               toast({
                 duration: 1000,
                 variant: 'default',
-                title: `${isFavorite ? '즐겨찾기 해제' : '즐겨찾기 등록'}`,
-                description: `${isFavorite ? '파일이 즐겨찾기에 해제되었습니다.' : '파일이 즐겨찾기에 등록되었습니다.'}`,
+                title: `${isFavorited ? '즐겨찾기 해제' : '즐겨찾기 등록'}`,
+                description: `${isFavorited ? '파일이 즐겨찾기에 해제되었습니다.' : '파일이 즐겨찾기에 등록되었습니다.'}`,
               })
             }}
             className='flex gap-1 items-center cursor-pointer'
           >
             <div className='flex gap-1 items-center cursor-pointer'>
-              {isFavorite ? (
+              {isFavorited ? (
                 <StarIcon className='w-4 h-4 fill-black' />
               ) : (
                 <StarIcon className='w-4 h-4' />

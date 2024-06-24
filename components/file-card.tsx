@@ -18,16 +18,13 @@ import { ko } from 'date-fns/locale'
 
 export function FileCard({
   file,
-  favorites,
 }: {
-  file: Doc<'files'>
-  favorites?: Doc<'favorites'>[]
+  file: Doc<'files'> & { isFavorited: boolean }
 }) {
   const size = 30
   const icon = <FileIcons mimeType={file.type} size={size} /> || (
     <FileIcons mimeType='default' size={size} />
   )
-  const isFavorite = favorites?.some((favorite) => favorite.fileId === file._id)
   const userProfile = useQuery(api.users.getUserProfile, {
     userId: file.userId,
   })
@@ -42,7 +39,7 @@ export function FileCard({
           <p className='text-base font-normal truncate'>{file.name}</p>
         </CardTitle>
         <div className='absolute top-2 right-2'>
-          <FileCardActions file={file} isFavorite={isFavorite} />
+          <FileCardActions file={file} isFavorited={file.isFavorited} />
         </div>
       </CardHeader>
       <CardContent>
