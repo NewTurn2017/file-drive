@@ -78,17 +78,18 @@ export const createFile = mutation({
 export const getFiles = query({
   args: {
     orgId: v.string(),
-    type: v.optional(v.string()),
     query: v.optional(v.string()),
     favorites: v.optional(v.boolean()),
     deletedOnly: v.optional(v.boolean()),
+    type: v.optional(fileTypes),
   },
   async handler(ctx, args) {
-    const access = await hasAccessToOrg(ctx, args.orgId)
+    const hasAccess = await hasAccessToOrg(ctx, args.orgId)
 
-    if (!access) {
+    if (!hasAccess) {
       return []
     }
+
     let files = await ctx.db
       .query('files')
       .withIndex('by_orgId', (q) => q.eq('orgId', args.orgId))
@@ -97,7 +98,7 @@ export const getFiles = query({
     const query = args.query
 
     if (query) {
-      return files.filter((file) =>
+      files = files.filter((file) =>
         file.name.toLowerCase().includes(query.toLowerCase())
       )
     }
@@ -106,7 +107,7 @@ export const getFiles = query({
       const favorites = await ctx.db
         .query('favorites')
         .withIndex('by_userId_orgId_fileId', (q) =>
-          q.eq('userId', access.user._id).eq('orgId', args.orgId)
+          q.eq('userId', hasAccess.user._id).eq('orgId', args.orgId)
         )
         .collect()
 
@@ -114,13 +115,14 @@ export const getFiles = query({
         favorites.some((favorite) => favorite.fileId === file._id)
       )
     }
+
     if (args.deletedOnly) {
       files = files.filter((file) => file.shouldDelete)
     } else {
       files = files.filter((file) => !file.shouldDelete)
     }
 
-    if (args.type !== 'all') {
+    if (args.type) {
       files = files.filter((file) => file.type === args.type)
     }
 
@@ -134,7 +136,6 @@ export const getFiles = query({
     return filesWithUrl
   },
 })
-
 export const deleteAllFiles = internalMutation({
   args: {},
   async handler(ctx) {

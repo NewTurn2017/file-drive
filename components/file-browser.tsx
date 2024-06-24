@@ -19,7 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { fileTypeArray, fileTypes } from '@/convex/schema'
+import { fileTypeArray } from '@/convex/schema'
+import { Doc } from '@/convex/_generated/dataModel'
 
 type Props = {
   title: string
@@ -31,7 +32,7 @@ export const FileBrowser = ({ title, favoritesOnly, deletedOnly }: Props) => {
   const organization = useOrganization()
   const user = useUser()
   const [query, setQuery] = useState('')
-  const [type, setType] = useState('all')
+  const [type, setType] = useState<Doc<'files'>['type'] | 'all'>('all')
 
   let orgId: string | undefined = undefined
   if (organization.isLoaded && user.isLoaded) {
@@ -46,7 +47,13 @@ export const FileBrowser = ({ title, favoritesOnly, deletedOnly }: Props) => {
   const files = useQuery(
     api.files.getFiles,
     orgId
-      ? { orgId, type, query, favorites: favoritesOnly, deletedOnly }
+      ? {
+          orgId,
+          type: type === 'all' ? undefined : type,
+          query,
+          favorites: favoritesOnly,
+          deletedOnly,
+        }
       : 'skip'
   )
 
@@ -97,7 +104,12 @@ export const FileBrowser = ({ title, favoritesOnly, deletedOnly }: Props) => {
               </TabsList>
 
               <div>
-                <Select value={type} onValueChange={setType}>
+                <Select
+                  value={type}
+                  onValueChange={(newType) => {
+                    setType(newType as any)
+                  }}
+                >
                   <SelectTrigger className='w-[180px]'>
                     <SelectValue />
                   </SelectTrigger>

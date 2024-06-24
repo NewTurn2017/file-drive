@@ -20,7 +20,10 @@ import Image from 'next/image'
 export function FileCard({
   file,
 }: {
-  file: Doc<'files'> & { isFavorited: boolean; url: string | null }
+  file: Doc<'files'> & {
+    isFavorited: boolean
+    url: string | null
+  }
 }) {
   const size = 30
   const icon = <FileIcons mimeType={file.type} size={size} /> || (
