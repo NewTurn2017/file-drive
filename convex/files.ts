@@ -7,7 +7,7 @@ import {
   QueryCtx,
 } from './_generated/server'
 import { fileTypes } from './schema'
-import { Id } from './_generated/dataModel'
+import { Doc, Id } from './_generated/dataModel'
 
 export const generateUploadUrl = mutation(async (ctx) => {
   const identity = await ctx.auth.getUserIdentity()
@@ -78,6 +78,7 @@ export const createFile = mutation({
 export const getFiles = query({
   args: {
     orgId: v.string(),
+    type: v.optional(v.string()),
     query: v.optional(v.string()),
     favorites: v.optional(v.boolean()),
     deletedOnly: v.optional(v.boolean()),
@@ -119,6 +120,10 @@ export const getFiles = query({
       files = files.filter((file) => !file.shouldDelete)
     }
 
+    if (args.type !== 'all') {
+      files = files.filter((file) => file.type === args.type)
+    }
+
     return files
   },
 })
@@ -140,6 +145,15 @@ export const deleteAllFiles = internalMutation({
   },
 })
 
+function assertCanDeleteFile(user: Doc<'users'>, file: Doc<'files'>) {
+  const canDelete =
+    file.userId === user._id || user.orgIds.some((org) => org.role === 'admin')
+
+  if (!canDelete) {
+    throw new ConvexError('you do not have permission to delete this file')
+  }
+}
+
 export const deleteFile = mutation({
   args: {
     fileId: v.id('files'),
@@ -152,11 +166,7 @@ export const deleteFile = mutation({
       throw new ConvexError('you do not have access to this file')
     }
 
-    const isAdmin = access.user.orgIds.some((org) => org.role === 'admin')
-
-    if (!isAdmin) {
-      throw new ConvexError('you do not have permission to delete this file')
-    }
+    assertCanDeleteFile(access.user, access.file)
 
     await ctx.db.patch(args.fileId, {
       shouldDelete: true,
@@ -176,11 +186,7 @@ export const restoreFile = mutation({
       throw new ConvexError('you do not have access to this file')
     }
 
-    const isAdmin = access.user.orgIds.some((org) => org.role === 'admin')
-
-    if (!isAdmin) {
-      throw new ConvexError('you do not have permission to delete this file')
-    }
+    assertCanDeleteFile(access.user, access.file)
 
     await ctx.db.patch(args.fileId, {
       shouldDelete: false,

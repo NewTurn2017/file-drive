@@ -34,6 +34,39 @@ export const fileTypes = v.union(
   v.literal('hwp')
 )
 
+export const fileTypeArray = [
+  'image',
+  'pdf',
+  'doc',
+  'docx',
+  'xls',
+  'xlsx',
+  'ppt',
+  'pptx',
+  'txt',
+  'csv',
+  'zip',
+  'rar',
+  'mp3',
+  'mp4',
+  'avi',
+  'mov',
+  'wav',
+  'mpg',
+  'mpeg',
+  'gif',
+  'png',
+  'jpg',
+  'jpeg',
+  'svg',
+  'bmp',
+  'gif',
+  'tiff',
+  'webp',
+  'm4a',
+  'hwp',
+] as const
+
 export const roles = v.union(v.literal('admin'), v.literal('member'))
 
 export default defineSchema({
